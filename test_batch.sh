@@ -8,9 +8,4 @@
 #SBATCH --mail-type=BEGIN,END,FAIL       # Mail preferences
 #SBATCH --mail-user=pbhinder3@gatech.edu # E-mail address for notifications
 
-module load anaconda3                    # Load module dependencies
-conda activate hml_lab2
-
-echo "Submitting SLURM job..."
-bash run_sim.sh
-echo "SLURM job submitted!"
+echo "Submitted SLURM job..."
