@@ -1,0 +1,3 @@
+Layer name, IFMAP Height, IFMAP Width, Filter Height, Filter Width, Channels, Num Filter, Strides,
+Convolution Layer 1,40,40,3,3,3,16,1,
+Convolution Layer 2,20,20,3,3,16,4,1,

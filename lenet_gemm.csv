@@ -1,0 +1,4 @@
+Layer Name, M, N, K,
+GEMM Layer 1, 1, 80, 32,
+GEMM Layer 2, 1, 120, 80,
+GEMM Layer 3, 1, 10, 120,
