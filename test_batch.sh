@@ -7,5 +7,6 @@
 #SBATCH -t12:00:00                       # Duration of the job
 #SBATCH --mail-type=BEGIN,END,FAIL       # Mail preferences
 #SBATCH --mail-user=pbhinder3@gatech.edu # E-mail address for notifications
+#SBATCH --licenses=none
 
 echo "Submitted SLURM job..."
