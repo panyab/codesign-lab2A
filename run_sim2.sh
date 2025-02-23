@@ -8,10 +8,11 @@ FILTER_SRAM=(1 2 3 4)
 OFMAP_SRAM=(1 2 3 4)
 DATAFLOW=("ws" "os" "is")
 
+
 # files and dirs
-OUTPUT_DIR="outputs"
-SYSTEM_CFG="system.cfg"
-TOP_TEN="top_configs.csv"
+OUTPUT_DIR="outputA3"
+SYSTEM_CFG="systemA3.cfg"
+TOP_TEN="top_configs_a3.csv"
 
 # create output dir
 mkdir -p "$OUTPUT_DIR"
@@ -61,16 +62,9 @@ for height in "${ARRAY_HEIGHT[@]}"; do
                             TOTAL_CYCLES_GEMM=$(awk -F',' 'NR > 1 {sum += $2} END {print sum}' "$CSV_FILE_GEMM")
                             TOTAL_CYCLES=$(($TOTAL_CYCLES_CONV + $TOTAL_CYCLES_GEMM))
 
-                            AVG_MAP_EFF_CONV=$(awk -F',' 'NR > 1 {sum += $5} END {print sum}' "$CSV_FILE_CONV")
-                            AVG_MAP_EFF_GEMM=$(awk -F',' 'NR > 1 {sum += $5} END {print sum}' "$CSV_FILE_GEMM")
-                            AVG_MAP_EFF=$(echo "scale=12; ($AVG_MAP_EFF_CONV + $AVG_MAP_EFF_GEMM)/5" | bc -l)
+                            TOTAL_AREA=$(echo "scale=12; 525*($height * $width) + 1015.7*($ifmap + $filter)" | bc -l)
 
-                            if (( $(echo "$AVG_MAP_EFF < 90" | bc -l) )); then
-                                ((index++))
-                                continue
-                            fi
-
-                            SCORE=$(echo "scale=12; (80000 / $TOTAL_CYCLES) + ($AVG_MAP_EFF * 8)" | bc -l )
+                            SCORE=$(echo "scale=12; (17500 / $TOTAL_CYCLES) + (15000 / $TOTAL_AREA)" | bc -l )
                             RES+=("$SCORE,$height,$width,$ifmap,$filter,$ofmap,$dataflow,$CFG,$SUBDIR")
                         fi
 
@@ -82,7 +76,7 @@ for height in "${ARRAY_HEIGHT[@]}"; do
     done
 done
 
-CSV_FILE="results.csv"
+CSV_FILE="resultsA3.csv"
 echo "Score,ArrayHeight,ArrayWidth,IfmapSram,FilterSram,OfmapSram,Dataflow,CFGPath,SubdirPath" > "$CSV_FILE"
 for result in "${RES[@]}"; do
     echo "$result" >> "$CSV_FILE"
@@ -103,7 +97,7 @@ for entry in "${sorted[@]}"; do
             continue
         fi
 
-        FINAL_CFG_PATH="submit_cfgs/"
+        FINAL_CFG_PATH="submit_cfgsA3/"
         mkdir -p "$FINAL_CFG_PATH"
         SYSTEM_CFG="$FINAL_CFG_PATH/system${i}.cfg"
         cp "$CFG" "$SYSTEM_CFG"
