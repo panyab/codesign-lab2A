@@ -8,7 +8,6 @@
 #SBATCH -oReport-%j.out                  # Combined output and error messages file
 #SBATCH --mail-type=BEGIN,END,FAIL       # Mail preferences
 #SBATCH --mail-user=pbhinder3@gatech.edu # E-mail address for notifications
-# cd $SLURM_SUBMIT_DIR                     # Change to working directory
 
 module load anaconda3                    # Load module dependencies
 conda activate hml_lab2
