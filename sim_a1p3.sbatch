@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=Lab2A_a1p2                     # Job name
+#SBATCH --job-name=Lab2A_a1p3                     # Job name
 #SBATCH --ntasks=1
 #SBATCH -N1                             # Number of nodes and cores per node required
 #SBATCH --exclusive
