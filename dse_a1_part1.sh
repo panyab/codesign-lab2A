@@ -1,11 +1,11 @@
 #!/bin/bash
 
 # param ranges
-ARRAY_HEIGHT=(3 4 5)
-ARRAY_WIDTH=(3 4 5)
-IFMAP_SRAM=(1)
-FILTER_SRAM=(1)
-OFMAP_SRAM=(1)
+ARRAY_HEIGHT=(3 4 5 6 7 8 9 10)
+ARRAY_WIDTH=(3 4 5 6 7 8 9 10)
+IFMAP_SRAM=(1 2 3 4)
+FILTER_SRAM=(1 2 3 4)
+OFMAP_SRAM=(1 2 3 4)
 DATAFLOW=("ws")
 
 # files and dirs
