@@ -2,19 +2,20 @@
 
 # param ranges
 ARRAY_HEIGHT=(3 4 5)
-ARRAY_WIDTH=(3 4)
+ARRAY_WIDTH=(3 4 5)
 IFMAP_SRAM=(1)
 FILTER_SRAM=(1)
 OFMAP_SRAM=(1)
-DATAFLOW=("ws" "os")
+DATAFLOW=("ws")
 
 # files and dirs
-OUTPUT_DIR="outputs_test"
-SYSTEM_CFG="systemTest.cfg"
-TOP_TEN="$OUTPUT_DIR/top_configs_test.csv"
+OUTPUT_DIR="dse_a1_part1_out"
+SYSTEM_CFG="system_a1_p1.cfg"
 
 # create output dir
 mkdir -p "$OUTPUT_DIR"
+CSV_FILE="$OUTPUT_DIR/results_a1_p1.csv"
+echo "Score,ArrayHeight,ArrayWidth,IfmapSram,FilterSram,OfmapSram,Dataflow,CFGPath,SubdirPath" > "$CSV_FILE"
 
 # method that writes to system.cfg
 modify_sys_conf() {
@@ -22,7 +23,7 @@ modify_sys_conf() {
 
     cp "$SYSTEM_CFG" "$new_cfg"
 
-    sed -i '' \
+    sed -i \
     -e "s/^ArrayHeight.*/ArrayHeight : $height/" \
     -e "s/^ArrayWidth.*/ArrayWidth : $width/" \
     -e "s/^IfmapSramSzkB.*/IfmapSramSzkB: $ifmap_sram/" \
@@ -32,12 +33,9 @@ modify_sys_conf() {
     "$new_cfg"
 }
 
-# init top 10 file 
-echo "Rank,ArrayHeight,ArrayWidth,IfmapSram,FilterSram,OfmapSram,Dataflow,Score" > "$TOP_TEN"
 
 declare -a RES
 index=0
-
 for height in "${ARRAY_HEIGHT[@]}"; do 
     for width in "${ARRAY_WIDTH[@]}"; do 
         for ifmap in "${IFMAP_SRAM[@]}"; do
@@ -72,6 +70,7 @@ for height in "${ARRAY_HEIGHT[@]}"; do
 
                             SCORE=$(echo "scale=12; (80000 / $TOTAL_CYCLES) + ($AVG_MAP_EFF * 8)" | bc -l )
                             RES+=("$SCORE,$height,$width,$ifmap,$filter,$ofmap,$dataflow,$CFG,$SUBDIR")
+                            echo "$SCORE,$height,$width,$ifmap,$filter,$ofmap,$dataflow,$CFG,$SUBDIR" >> "$CSV_FILE"
                         fi
 
                         ((index++))
@@ -82,39 +81,17 @@ for height in "${ARRAY_HEIGHT[@]}"; do
     done
 done
 
-CSV_FILE="$OUTPUT_DIR/test_results.csv"
-echo "Score,ArrayHeight,ArrayWidth,IfmapSram,FilterSram,OfmapSram,Dataflow,CFGPath,SubdirPath" > "$CSV_FILE"
-for result in "${RES[@]}"; do
-    echo "$result" >> "$CSV_FILE"
-done
-
-# sort and find top 10 
+# CSV_FILE="$OUTPUT_DIR/results_a1_p1.csv"
+# echo "Score,ArrayHeight,ArrayWidth,IfmapSram,FilterSram,OfmapSram,Dataflow,CFGPath,SubdirPath" > "$CSV_FILE"
+# for result in "${RES[@]}"; do
+#     echo "$result" >> "$CSV_FILE"
+# done
 
 IFS=$'\n' sorted=($(sort -t',' -k1,1nr <<< "${RES[*]}"))
 unset IFS
 
-i=0
+SORTED_CSV_FILE="$OUTPUT_DIR/sorted_a1_p1.csv"
+echo "Score,ArrayHeight,ArrayWidth,IfmapSram,FilterSram,OfmapSram,Dataflow,CFGPath,SubdirPath" > "$SORTED_CSV_FILE"
 for entry in "${sorted[@]}"; do 
-    if (( $i < 10 )); then
-        IFS=',' read -r SCORE HEIGHT WIDTH IFMAP FILTER OFMAP DATAFLOW CFG SUBDIR <<< "$entry"
-
-        if grep -q "$SCORE" "$TOP_TEN"; then
-            ((i++))
-            continue
-        fi
-
-        FINAL_CFG_PATH="submit_cfgs/"
-        mkdir -p "$FINAL_CFG_PATH"
-        SYSTEM_CFG="$FINAL_CFG_PATH/system${i}.cfg"
-        cp "$CFG" "$SYSTEM_CFG"
-        MERGED_CSV="$FINAL_CFG_PATH/COMPUTE_REPORT${i}.csv"
-        echo "LayerID,Total Cycles,Stall Cycles,Overall Util %,Mapping Efficiency %,Compute Util %" > "$MERGED_CSV"
-        awk 'NR>1' "$SUBDIR/conv/lenet_DSE_run/COMPUTE_REPORT.csv" >> "$MERGED_CSV"
-        awk 'NR>1' "$SUBDIR/gemm/lenet_DSE_run/COMPUTE_REPORT.csv" >> "$MERGED_CSV"
-
-        echo "$((i+1)),$HEIGHT,$WIDTH,$IFMAP,$FILTER,$OFMAP,$DATAFLOW,$SCORE" >> "$TOP_TEN"
-        ((i++))
-    else
-        break
-    fi
+    echo "$entry" >> "$SORTED_CSV_FILE"
 done

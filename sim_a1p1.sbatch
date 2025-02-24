@@ -1,6 +1,6 @@
 #!/bin/bash
 
-#SBATCH --job-name=Lab2A                     # Job name
+#SBATCH --job-name=Lab2A_a1p1               # Job name
 #SBATCH --ntasks=1
 #SBATCH -N1                             # Number of nodes and cores per node required
 #SBATCH --exclusive
@@ -10,8 +10,6 @@
 #SBATCH --mail-user=pbhinder3@gatech.edu # E-mail address for notifications
 
 module load anaconda3                    # Load module dependencies
-conda activate hml_lab2
 
-echo "Submitting SLURM job..."
-bash run_sim.sh
+bash dse_a1_part1.sh
 echo "SLURM job submitted!"

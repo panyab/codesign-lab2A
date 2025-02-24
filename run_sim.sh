@@ -94,8 +94,9 @@ IFS=$'\n' sorted=($(sort -t',' -k1,1nr <<< "${RES[*]}"))
 unset IFS
 
 i=0
+rank=0
 for entry in "${sorted[@]}"; do 
-    if (( $i < 10 )); then
+    if (( $rank < 10 )); then
         IFS=',' read -r SCORE HEIGHT WIDTH IFMAP FILTER OFMAP DATAFLOW CFG SUBDIR <<< "$entry"
 
         if grep -q "$SCORE" "$TOP_TEN"; then
@@ -105,15 +106,16 @@ for entry in "${sorted[@]}"; do
 
         FINAL_CFG_PATH="submit_cfgs/"
         mkdir -p "$FINAL_CFG_PATH"
-        SYSTEM_CFG="$FINAL_CFG_PATH/system${i}.cfg"
+        SYSTEM_CFG="$FINAL_CFG_PATH/system${rank}.cfg"
         cp "$CFG" "$SYSTEM_CFG"
-        MERGED_CSV="$FINAL_CFG_PATH/COMPUTE_REPORT${i}.csv"
+        MERGED_CSV="$FINAL_CFG_PATH/COMPUTE_REPORT${rank}.csv"
         echo "LayerID,Total Cycles,Stall Cycles,Overall Util %,Mapping Efficiency %,Compute Util %" > "$MERGED_CSV"
         awk 'NR>1' "$SUBDIR/conv/lenet_DSE_run/COMPUTE_REPORT.csv" >> "$MERGED_CSV"
         awk 'NR>1' "$SUBDIR/gemm/lenet_DSE_run/COMPUTE_REPORT.csv" >> "$MERGED_CSV"
 
-        echo "$((i+1)),$HEIGHT,$WIDTH,$IFMAP,$FILTER,$OFMAP,$DATAFLOW,$SCORE" >> "$TOP_TEN"
+        echo "$((rank+1)),$HEIGHT,$WIDTH,$IFMAP,$FILTER,$OFMAP,$DATAFLOW,$SCORE" >> "$TOP_TEN"
         ((i++))
+        ((rank++))
     else
         break
     fi
